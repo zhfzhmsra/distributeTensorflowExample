@@ -37,8 +37,21 @@ def create_done_queues():
   return [create_done_queue(i) for i in range(PS_NUM)]
 
 def main(_):
-  config = tf.ConfigProto()
-  config.gpu_options.allow_growth = True
+  # config = tf.ConfigProto()
+  # config.gpu_options.allow_growth = True
+
+  if FLAGS.job_name == 'ps':
+    config = tf.ConfigProto(
+      device_count={'CPU': 1, 'GPU': 0},
+      allow_soft_placement=True,
+      log_device_placement=False
+    )
+  else:
+    config = tf.ConfigProto(
+      allow_soft_placement=True,
+      log_device_placement=False,
+    )
+    config.gpu_options.allow_growth = True
 
   ps_hosts = FLAGS.ps_hosts.split(",")
   worker_hosts = FLAGS.worker_hosts.split(",")
@@ -49,16 +62,16 @@ def main(_):
   issync = FLAGS.issync
   if FLAGS.job_name == "ps":
 
-    with tf.device('/cpu:0'):
-      sess = tf.Session(server.target)
-      queue = create_done_queue(FLAGS.task_index)
+    # with tf.device('/cpu:0'):
+    sess = tf.Session(server.target)
+    queue = create_done_queue(FLAGS.task_index)
 
-      # wait until all workers are done
-      for i in range(WORKER_NUM):
-        sess.run(queue.dequeue())
-        print("ps %d received done %d" % (FLAGS.task_index, i))
+    # wait until all workers are done
+    for i in range(WORKER_NUM):
+      sess.run(queue.dequeue())
+      print("ps %d received done %d" % (FLAGS.task_index, i))
 
-      print("ps %d: quitting" % (FLAGS.task_index))
+    print("ps %d: quitting" % (FLAGS.task_index))
 
   elif FLAGS.job_name == "worker":
     with tf.device(tf.train.replica_device_setter(
