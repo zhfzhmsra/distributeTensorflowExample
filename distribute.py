@@ -55,7 +55,7 @@ def main(_):
     )
     config.gpu_options.allow_growth = True
 
-  if FLAGS.job_nam == 'worker' and FLAGS.task_index == 0:
+  if FLAGS.job_name == 'worker' and FLAGS.task_index == 0:
     import shutil
     shutil.rmtree(SAVE_CHECKPOINT_DIR)
 
