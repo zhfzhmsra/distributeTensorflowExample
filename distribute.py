@@ -23,6 +23,7 @@ steps_to_validate = FLAGS.steps_to_validate
 
 PS_NUM = len(FLAGS.ps_hosts.split(","))
 WORKER_NUM = len(FLAGS.worker_hosts.split(","))
+SAVE_CHECKPOINT_DIR = "./checkpoint/"
 
 def create_done_queue(i):
   """Queue used to signal death for i'th ps shard. Intended to have 
@@ -53,6 +54,10 @@ def main(_):
       log_device_placement=False,
     )
     config.gpu_options.allow_growth = True
+
+  if FLAGS.job_nam == 'worker' and FLAGS.task_index == 0:
+    import shutil
+    shutil.rmtree(SAVE_CHECKPOINT_DIR)
 
   ps_hosts = FLAGS.ps_hosts.split(",")
   worker_hosts = FLAGS.worker_hosts.split(",")
@@ -91,6 +96,10 @@ def main(_):
       optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 
       grads_and_vars = optimizer.compute_gradients(loss_value)
+
+      for grad, var in grads_and_vars:
+        print ('grad_device:', grad.device, '\tvar_device:',var.device)
+
       if issync == 1:
         #同步模式计算更新梯度
         rep_op = tf.train.SyncReplicasOptimizer(optimizer,
@@ -123,7 +132,7 @@ def main(_):
         enq_ops.append(qop)
  
     sv = tf.train.Supervisor(is_chief=(FLAGS.task_index == 0),
-                            logdir="./checkpoint/",
+                            logdir= SAVE_CHECKPOINT_DIR,
                             init_op=init_op,
                             summary_op=None,
                             saver=saver,

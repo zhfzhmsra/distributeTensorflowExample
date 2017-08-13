@@ -30,7 +30,7 @@ python distribute.py --ps_hosts=52.168.164.115:2222 --worker_hosts=52.168.164.11
 
 ps 节点执行：
 
-python distribute.py --ps_hosts=52.168.164.115:2222 --worker_hosts=40.71.46.250:2225,52.168.164.115:2224 --job_name=ps --task_index=0
+CUDA_VISIBLE_DEVICES="" python distribute.py --ps_hosts=52.168.164.115:2222 --worker_hosts=40.71.46.250:2225,52.168.164.115:2224 --job_name=ps --task_index=0
 
 worker 节点执行:
 
