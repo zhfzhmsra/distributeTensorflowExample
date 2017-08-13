@@ -48,16 +48,16 @@ def main(_):
 
   issync = FLAGS.issync
   if FLAGS.job_name == "ps":
-    server.join()
-    # sess = tf.Session(server.target)
-    # queue = create_done_queue(FLAGS.task_index)
-    #
-    # # wait until all workers are done
-    # for i in range(WORKER_NUM):
-    #   sess.run(queue.dequeue())
-    #   print("ps %d received done %d" % (FLAGS.task_index, i))
-    #
-    # print("ps %d: quitting" % (FLAGS.task_index))
+    # server.join()
+    sess = tf.Session(server.target)
+    queue = create_done_queue(FLAGS.task_index)
+
+    # wait until all workers are done
+    for i in range(WORKER_NUM):
+      sess.run(queue.dequeue())
+      print("ps %d received done %d" % (FLAGS.task_index, i))
+
+    print("ps %d: quitting" % (FLAGS.task_index))
 
   elif FLAGS.job_name == "worker":
     with tf.device(tf.train.replica_device_setter(
