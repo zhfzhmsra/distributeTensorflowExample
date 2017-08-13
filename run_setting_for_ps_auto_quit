@@ -1,0 +1,5 @@
+python distribute_ps_auto_quit.py --ps_hosts=10.172.149.134:2222 --worker_hosts=10.172.149.134:2224,10.172.149.134:2225 --job_name=ps --task_index=0
+
+python distribute_ps_auto_quit.py --ps_hosts=10.172.149.134:2222 --worker_hosts=10.172.149.134:2224,10.172.149.134:2225 --job_name=worker --task_index=0
+
+python distribute_ps_auto_quit.py --ps_hosts=10.172.149.134:2222 --worker_hosts=10.172.149.134:2224,10.172.149.134:2225 --job_name=worker --task_index=1
