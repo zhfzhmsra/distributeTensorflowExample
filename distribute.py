@@ -37,10 +37,14 @@ def create_done_queues():
   return [create_done_queue(i) for i in range(PS_NUM)]
 
 def main(_):
+  config = tf.ConfigProto()
+  config.gpu_options.allow_growth = True
+
   ps_hosts = FLAGS.ps_hosts.split(",")
   worker_hosts = FLAGS.worker_hosts.split(",")
   cluster = tf.train.ClusterSpec({"ps": ps_hosts, "worker": worker_hosts})
-  server = tf.train.Server(cluster,job_name=FLAGS.job_name,task_index=FLAGS.task_index)
+  server = tf.train.Server(cluster,job_name=FLAGS.job_name,task_index=FLAGS.task_index
+                           ,config=config)
 
   issync = FLAGS.issync
   if FLAGS.job_name == "ps":
